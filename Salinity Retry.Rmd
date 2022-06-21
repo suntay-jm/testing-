@@ -1,0 +1,89 @@
+---
+title: "Salinity Data"
+author: "Matt"
+date: '2022-06-20'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Download data
+## 2. Create new RMD file
+## 3. Read data into R 
+```{r}
+data = read.csv("DataSalinity_SFbar_FortPoint.csv")
+
+summary(data)
+```
+
+## 4. Make sure dates are recognized as dates
+```{r}
+#install.packages("chron)
+library(chron)
+
+data$Date = as.chron(data$Date)
+
+summary(data)
+```
+
+## 5. Plot date vs. salinity
+```{r}
+plot(x=data$Date, y= data$Salinity, col = "purple")
+```
+
+## 6. Add line for Oct 24th 2021
+```{r}
+plot(x=data$Date, y= data$Salinity, col = "purple")
+abline(v = as.chron("10/24/2021"))
+```
+
+
+## Practicing ggplot2 
+```{r}
+#install.packages("ggplot2")
+library(ggplot2)
+
+#save ggplot function into a variable | use aes to choose what parts of data to use 
+myplot = ggplot(data, aes(Date, WaterTemp))
+
+myplot + geom_point(col = "blue") +
+  scale_x_chron() +
+  geom_vline(xintercept = as.chron("10/24/2021"), linetype = 2, color = "red", size = 1.5) +
+  facet_wrap(~Location)
+```
+
+##ggplot color for location
+```{r}
+#install.packages("ggplot2")
+#library(ggplot2)
+
+
+myplot = ggplot(data, aes(Date, WaterTemp))
+
+#alpha leaves silhouette of data points 
+myplot + geom_point(aes(col = Location), alpha = .1) +
+  scale_x_chron() +
+  geom_vline(xintercept = as.chron("10/24/2021"), linetype = 2, color = "red", size = 1.5)
+
+#taking out facet_wrap() combines two graphs
+#this means facet_wrap() separates
+```
+
+## Changing Data
+```{r}
+#converting celcius to fahrenheit
+#creating new column called fahrenheit by data$Fahrenheit
+data$Fahrenheit = data$WaterTemp*1.8+32
+
+summary(data)
+
+#subsetting data
+
+FortPointData = subset(data, Location == "FortPoint")
+
+dim(FortPointData)
+dim(data)
+```
+
